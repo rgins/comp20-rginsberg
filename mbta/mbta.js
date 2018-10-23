@@ -25,28 +25,28 @@ var central_square = {lat: 42.365486, lng: -71.103802};
 var braintree = {lat: 42.2078543, lng: -71.0011385};
 
 var stations = [
-{position: alewife, stop_name: "Alewife", stop_id: "place_alcfcl", marker: null},
-{position: davis, stop_name: "Davis", stop_id: "place_davis", marker: null},
-{position: porter_square, stop_name: "Porter Square", stop_id: "place_pptr", marker: null}, 
-{position: harvard_square, stop_name: "Harvard Square", stop_id: "place_hrsq", marker: null}, 
-{position: central_square, stop_name: "Central Square", stop_id: "place_cntsq", marker: null},
-{position: kendall_mit, stop_name: "Kenall/MIT", stop_id: "place_knncl", marker: null},
-{position: charles_mgh, stop_name: "Charles/MGH", stop_id: "place_chnml", marker: null},
-{position: park_street, stop_name: "Park Street", stop_id: "place_pktrm", marker: null},
-{position: downtown_crossing, stop_name: "Downtown Crossing", stop_id: "place_dwnxg", marker: null},
-{position: south, stop_name: "South Station", stop_id: "place_sstat", marker: null},
-{position: broadway, stop_name: "Broadway", stop_id: "place_brdwy", marker: null},
- {position: andrew, stop_name: "Andrew", stop_id: "place_andrw", marker: null}, 
- {position: jfk_umass, stop_name: "JFK/UMASS", stop_id: "place_jfk", marker: null},
- {position: savin_hill, stop_name: "Savin Hill", stop_id: "place_shmnl", marker: null},
- {position: fields_corner, stop_name: "Fields Corner", stop_id: "place_fldcr", marker: null},
-{position: shawmut, stop_name: "Shawmut", stop_id: "place_smmnl", marker: null},
-{position: ashmont, stop_name: "Ashmont", stop_id: "place_asmnl", marker: null},
- {position: north_quincy, stop_name: "North Quincy", stop_id: "place_nqncy"},
-{position: wollaston, stop_name: "Wollaston", stop_id: "place_wlsta"},
- {position: quincy_center, stop_name: "Quincy Center", stop_id: "place_qnctr"},
-{position: quincy_adams, stop_name: "Quincy Adams", stop_id: "place_qamnl"},
-{position: braintree, stop_name: "Braintree", stop_id: "place_brntn"}
+{position: alewife, stop_name: "Alewife", stop_id: "place-alcfcl", marker: null},
+{position: davis, stop_name: "Davis", stop_id: "place-davis", marker: null},
+{position: porter_square, stop_name: "Porter Square", stop_id: "place-pptr", marker: null}, 
+{position: harvard_square, stop_name: "Harvard Square", stop_id: "place-hrsq", marker: null}, 
+{position: central_square, stop_name: "Central Square", stop_id: "place-cntsq", marker: null},
+{position: kendall_mit, stop_name: "Kenall/MIT", stop_id: "place-knncl", marker: null},
+{position: charles_mgh, stop_name: "Charles/MGH", stop_id: "place-chnml", marker: null},
+{position: park_street, stop_name: "Park Street", stop_id: "place-pktrm", marker: null},
+{position: downtown_crossing, stop_name: "Downtown Crossing", stop_id: "place-dwnxg", marker: null},
+{position: south, stop_name: "South Station", stop_id: "place-sstat", marker: null},
+{position: broadway, stop_name: "Broadway", stop_id: "place-brdwy", marker: null},
+ {position: andrew, stop_name: "Andrew", stop_id: "place-andrw", marker: null}, 
+ {position: jfk_umass, stop_name: "JFK/UMASS", stop_id: "place-jfk", marker: null},
+ {position: savin_hill, stop_name: "Savin Hill", stop_id: "place-shmnl", marker: null},
+ {position: fields_corner, stop_name: "Fields Corner", stop_id: "place-fldcr", marker: null},
+{position: shawmut, stop_name: "Shawmut", stop_id: "place-smmnl", marker: null},
+{position: ashmont, stop_name: "Ashmont", stop_id: "place-asmnl", marker: null},
+ {position: north_quincy, stop_name: "North Quincy", stop_id: "place-nqncy"},
+{position: wollaston, stop_name: "Wollaston", stop_id: "place-wlsta"},
+ {position: quincy_center, stop_name: "Quincy Center", stop_id: "place-qnctr"},
+{position: quincy_adams, stop_name: "Quincy Adams", stop_id: "place-qamnl"},
+{position: braintree, stop_name: "Braintree", stop_id: "place-brntn"}
 ];
 var icon = "subway.png";
 var infoWindow;
@@ -64,6 +64,9 @@ function initMap() {
 
 
     // console.log("past geolocation");
+
+
+
 
 
 
@@ -108,20 +111,149 @@ function make_markers() {
       }
 }
 
+function get_schedule(station) {
+	var request;
+    request = new XMLHttpRequest();
+    request.open("GET", "https://api-v3.mbta.com/predictions?filter[route]=Red&filter[stop]=" 
+    	+ station.stop_id + "&page[limit]=10&page[offset]=0&sort=departure_time&api_key=c5df0bac5455448db1582cc8721e993b", true);
+    var returnHTML;
+    request.onreadystatechange = function() {
+		if (request.readyState == 4 && request.status == 200) {
+			// Step 5: when we get all the JSON data back, parse it and use it
+			theData = request.responseText;
+			stop_info = JSON.parse(theData);
+			console.log("parsed");
+			// console.log(stop_info);
+
+			returnHTML = '<h4>' + station.stop_name + '</h4>';
+			console.log(station.stop_name);
+
+
+			console.log(stop_info["data"]["attributes"]);
+
+			// stop_info.forEach(function(attribute) {
+			// 	console.log(attribute);
+  	// 		});
+
+			// for (i = 0; i < messages.length; i++) {
+			// 	returnHTML += "<li>" + messages[i].content + " by " + messages[i].username + 
+			// 	"</li>";
+			// }
+			// returnHTML += "</p>";
+			// document.getElementById("messages").innerHTML =returnHTML;
+			
+		}
+		else if (request.readyState == 4 && request.status != 200) {
+			// document.getElementById("messages").innerHTML = "Whoops, something went terribly wrong!";
+			// console.log("not 200");
+
+		}
+		else if (request.readyState == 3) {
+			// console.log("3");
+			// document.getElementById("messages").innerHTML = "Come back soon!";
+		}
+
+
+
+
+
+    	// var stop_info = JSON.parse(request.responseText);
+    	// console.log(request.responseText);
+    }
+
+    request.send();
+    return returnHTML;
+}
+
 function display_schedule() {
 	
 	// var infowindow;
 
 	stations.forEach(function(station) {
-		content_string = '<h4>' + station.stop_name + '</h4';
-		var infowindow = new google.maps.InfoWindow({
+		
 
-    	content: content_string
-  		});
 
   		station.marker.addListener('click', function() {
-    	infowindow.open(map, station.marker);
-  	})});
+  			// get_schedule(station);
+  			content_string = '<h4>' + station.stop_name + '</h4>';
+
+  			var request;
+    		request = new XMLHttpRequest();
+    		request.open("GET", "https://api-v3.mbta.com/predictions?filter[route]=Red&filter[stop]=" 
+    				+ station.stop_id + "&page[limit]=10&page[offset]=0&sort=departure_time&api_key=c5df0bac5455448db1582cc8721e993b", true);
+    		var returnHTML;
+    		request.onreadystatechange = function() {
+			if (request.readyState == 4 && request.status == 200) {
+				// Step 5: when we get all the JSON data back, parse it and use it
+				theData = request.responseText;
+				stop_info = JSON.parse(theData);
+				// console.log("parsed");
+				// console.log(stop_info);
+				var times = [];
+				// console.log(station.stop_name);
+
+				stop_info["data"].forEach(function(prediction) {
+					var loc_time = prediction["attributes"]["arrival_time"];
+					var loc_direction = prediction["attributes"]["direction_id"];
+					times.push({time: loc_time, direction: loc_direction});
+					// console.log(prediction["attributes"]["arrival_time"]);
+				});
+
+				content_string += '<h6>Time\tDirection</h6>';
+				times.forEach(function(time) {
+					loc_string = '<p>' +  + '</p>';
+					// content_string += loc_string;
+				});
+
+				console.log(times);
+
+				// for(i = 0; i < ; i++) {
+				// 	console.log(stop_info["data"][i]);
+				// }
+
+
+				// console.log(stop_info["data"][0]);
+
+				// stop_info.forEach(function(attribute) {
+				// 	console.log(attribute);
+  				// 		});
+
+				// for (i = 0; i < messages.length; i++) {
+				// 	returnHTML += "<li>" + messages[i].content + " by " + messages[i].username + 
+				// 	"</li>";
+				// }
+				// returnHTML += "</p>";
+				// document.getElementById("messages").innerHTML =returnHTML;
+			
+			}
+			else if (request.readyState == 4 && request.status != 200) {
+				// document.getElementById("messages").innerHTML = "Whoops, something went terribly wrong!";
+				// console.log("not 200");
+
+			}
+			else if (request.readyState == 3) {
+				// console.log("3");
+				// document.getElementById("messages").innerHTML = "Come back soon!";
+			}
+
+
+
+
+
+    		// var stop_info = JSON.parse(request.responseText);
+    		// console.log(request.responseText);
+   			 }
+
+    		request.send();
+
+
+
+			var infowindow = new google.maps.InfoWindow({
+    			content: content_string
+  			});
+    		infowindow.open(map, station.marker);
+  		})
+  	});
 }
 
 function user_loc() {
@@ -160,5 +292,7 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
                         'Error: Your browser doesn\'t support geolocation.');
   infoWindow.open(map);
 }
+
+
 
 
