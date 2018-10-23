@@ -25,38 +25,38 @@ var central_square = {lat: 42.365486, lng: -71.103802};
 var braintree = {lat: 42.2078543, lng: -71.0011385};
 
 var stations = [
-{position: alewife, stop_name: "Alewife", stop_id: "place_alcfcl"},
-{position: davis, stop_name: "Davis", stop_id: "place_davis"},
-{position: porter_square, stop_name: "Porter Square", stop_id: "place_pptr"}, 
-{position: harvard_square, stop_name: "Harvard Square", stop_id: "place_hrsq"}, 
-{position: central_square, stop_name: "Central Square", stop_id: "place_cntsq"},
-{position: kendall_mit, stop_name: "Kenall/MIT", stop_id: "place_knncl"},
-{position: charles_mgh, stop_name: "Charles/MGH", stop_id: "place_chnml"},
-{position: park_street, stop_name: "Park Street", stop_id: "place_pktrm"},
-{position: downtown_crossing, stop_name: "Downtown Crossing", stop_id: "place_dwnxg"},
-{position: south, stop_name: "South Station", stop_id: "place_sstat"},
-{position: broadway, stop_name: "Broadway", stop_id: "place_brdwy"},
- {position: andrew, stop_name: "Andrew", stop_id: "place_andrw"}, 
- {position: jfk_umass, stop_name: "JFK/UMASS", stop_id: "place_jfk"},
-//  {position: savin_hill, stop_name: "Savin Hill", stop_id: "place_shmnl"},
+{position: alewife, stop_name: "Alewife", stop_id: "place_alcfcl", marker: null},
+{position: davis, stop_name: "Davis", stop_id: "place_davis", marker: null},
+{position: porter_square, stop_name: "Porter Square", stop_id: "place_pptr", marker: null}, 
+{position: harvard_square, stop_name: "Harvard Square", stop_id: "place_hrsq", marker: null}, 
+{position: central_square, stop_name: "Central Square", stop_id: "place_cntsq", marker: null},
+{position: kendall_mit, stop_name: "Kenall/MIT", stop_id: "place_knncl", marker: null},
+{position: charles_mgh, stop_name: "Charles/MGH", stop_id: "place_chnml", marker: null},
+{position: park_street, stop_name: "Park Street", stop_id: "place_pktrm", marker: null},
+{position: downtown_crossing, stop_name: "Downtown Crossing", stop_id: "place_dwnxg", marker: null},
+{position: south, stop_name: "South Station", stop_id: "place_sstat", marker: null},
+{position: broadway, stop_name: "Broadway", stop_id: "place_brdwy", marker: null},
+ {position: andrew, stop_name: "Andrew", stop_id: "place_andrw", marker: null}, 
+ {position: jfk_umass, stop_name: "JFK/UMASS", stop_id: "place_jfk", marker: null},
+ {position: savin_hill, stop_name: "Savin Hill", stop_id: "place_shmnl", marker: null},
+ {position: fields_corner, stop_name: "Fields Corner", stop_id: "place_fldcr", marker: null},
+{position: shawmut, stop_name: "Shawmut", stop_id: "place_smmnl", marker: null},
+{position: ashmont, stop_name: "Ashmont", stop_id: "place_asmnl", marker: null},
+
+
+
+ {position: north_quincy, stop_name: "North Quincy", stop_id: "place_nqncy"},
+{position: wollaston, stop_name: "Wollaston", stop_id: "place_wlsta"},
+ {position: quincy_center, stop_name: "Quincy Center", stop_id: "place_qnctr"},
+{position: quincy_adams, stop_name: "Quincy Adams", stop_id: "place_qamnl"},
+{position: braintree, stop_name: "Braintree", stop_id: "place_brntn"}
+
  
- 
-// {position: north_quincy, stop_name: "North Quincy", stop_id: "place_nqncy"},
-// {position: shawmut, stop_name: "Shawmut", stop_id: "place_smmnl"},
-
-
-
-// {position: quincy_center, stop_name: "Quincy Center", stop_id: "place_qnctr"},
-// {position: quincy_adams, stop_name: "Quincy Adams", stop_id: "place_qamnl"},
-// {position: ashmont, stop_name: "Ashmont", stop_id: "place_asmnl"},
-// {position: wollaston, stop_name: "Wollaston", stop_id: "place_wlsta"},
-// {position: fields_corner, stop_name: "Fields Corner", stop_id: "place_fldcr"},
-
-// {position: braintree, stop_name: "Braintree", stop_id: "place_brntn"}
 ];
 
-
-
+// var fruit = ["apples", "bananas", "cherries"];
+// fruit.push("Danish");
+// console.log(fruit);
 
 function initMap() {
    // The map, centered at south station
@@ -68,32 +68,61 @@ function initMap() {
       // var south_marker = new google.maps.Marker({position: south, 
       //  title: "South Station", map: map});
 
-      var pos_list = [];
-      for (i = 0; i < stations.length; i++) {
-      	var pos = stations[i].position;
-      	pos_list[i] = pos;
-      }
+      var pos_list1 = [];
+      var pos_list2 = [jfk_umass, north_quincy, wollaston, quincy_center, 
+      					quincy_adams, braintree];
+      var icon = "subway.png";
+      for (i = 0; i < stations.length - 5; i++) {
+      	pos_list1[i] = stations[i].position;
+    	}
 
-      var line = new google.maps.Polyline({
-      	path: pos_list, 
-      	map: map, 
-      	strokeColor: "red",
-      	strokeWeight: 2,
+      var line1 = new google.maps.Polyline({
+      	path: pos_list1, 
+      	map: map,
+        strokeColor: "red",
+      	strokeWeight: 6,
       	storkeOpacity: 1.0});
 
+     var line2 = new google.maps.Polyline({
+      	path: pos_list2, 
+      	map: map, 
+      	strokeColor: "red",
+      	strokeWeight: 6,
+      	storkeOpacity: 1.0});
 
-        stations.forEach(function(station) {
+     // var marker_ray = [];
+        // stations.forEach(function(station) 
+
+
+      for (i = 0; i < stations.length; i++ ) {
           var marker = new google.maps.Marker({
-            position: station.position,
-            map: map
-
-            // label: station.stop_name
+            position: stations[i].position,
+            map: map,
+            icon: icon,
+            label: stations[i].stop_name
             // use MarkerLabel to make pop up square that holds 
             // time information
           });
-        });
+          console.log(marker);
+          stations[i].marker = marker;
 
+      }
+
+      console.log(stations);
+          // marker_ray
+        
+
+  var infowindow = new google.maps.InfoWindow({
+    content: "woo"
+  });
+
+
+  marker.addListener('click', function() {
+    infowindow.open(map, stations[0].marker);
+  });
 
 }
+
+
 
 
