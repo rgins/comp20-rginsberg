@@ -42,36 +42,38 @@ var stations = [
  {position: fields_corner, stop_name: "Fields Corner", stop_id: "place_fldcr", marker: null},
 {position: shawmut, stop_name: "Shawmut", stop_id: "place_smmnl", marker: null},
 {position: ashmont, stop_name: "Ashmont", stop_id: "place_asmnl", marker: null},
-
-
-
  {position: north_quincy, stop_name: "North Quincy", stop_id: "place_nqncy"},
 {position: wollaston, stop_name: "Wollaston", stop_id: "place_wlsta"},
  {position: quincy_center, stop_name: "Quincy Center", stop_id: "place_qnctr"},
 {position: quincy_adams, stop_name: "Quincy Adams", stop_id: "place_qamnl"},
 {position: braintree, stop_name: "Braintree", stop_id: "place_brntn"}
-
- 
 ];
+var icon = "subway.png";
+var infoWindow;
 
-// var fruit = ["apples", "bananas", "cherries"];
-// fruit.push("Danish");
-// console.log(fruit);
 
 function initMap() {
-   // The map, centered at south station
     map = new google.maps.Map(document.getElementById('map'), {
          center: south,
           zoom: 12
         });
-      // The marker, positioned at Uluru
-      // var south_marker = new google.maps.Marker({position: south, 
-      //  title: "South Station", map: map});
+    make_polyline();
+    make_markers();
+    // user_loc();
+    display_schedule()
 
+
+    console.log("past geolocation");
+
+
+
+}
+
+function make_polyline() {
       var pos_list1 = [];
       var pos_list2 = [jfk_umass, north_quincy, wollaston, quincy_center, 
       					quincy_adams, braintree];
-      var icon = "subway.png";
+      
       for (i = 0; i < stations.length - 5; i++) {
       	pos_list1[i] = stations[i].position;
     	}
@@ -89,40 +91,65 @@ function initMap() {
       	strokeColor: "red",
       	strokeWeight: 6,
       	storkeOpacity: 1.0});
+}
 
-     // var marker_ray = [];
-        // stations.forEach(function(station) 
-
-
-      for (i = 0; i < stations.length; i++ ) {
+function make_markers() {
+	    for (i = 0; i < stations.length; i++ ) {
           var marker = new google.maps.Marker({
             position: stations[i].position,
             map: map,
-            icon: icon,
-            label: stations[i].stop_name
-            // use MarkerLabel to make pop up square that holds 
-            // time information
+            icon: icon
+            // label: stations[i].stop_name
           });
-          console.log(marker);
+          // console.log(marker);
           stations[i].marker = marker;
 
       }
-
-      console.log(stations);
-          // marker_ray
-        
-
-  var infowindow = new google.maps.InfoWindow({
-    content: "woo"
-  });
-
-
-  marker.addListener('click', function() {
-    infowindow.open(map, stations[0].marker);
-  });
-
 }
 
+function display_schedule() {
+	
+	// var infowindow;
 
+	stations.forEach(function(station) {
+		var infowindow = new google.maps.InfoWindow({
+    	content: station.stop_name
+  		});
+
+  		station.marker.addListener('click', function() {
+    	infowindow.open(map, station.marker);
+  	})});
+}
+
+function user_loc() {
+	  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+
+      infoWindow = new google.maps.InfoWindow;
+
+      infoWindow.setPosition(pos);
+      infoWindow.setContent('Location found.');
+      infoWindow.open(map);
+      map.setCenter(pos);
+    }, function() {
+      handleLocationError(true, infoWindow, map.getCenter());
+    });
+  } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false, infoWindow, map.getCenter());
+  }
+}
+
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+  infoWindow.setPosition(pos);
+  infoWindow.setContent(browserHasGeolocation ?
+                        'Error: The Geolocation service failed.' :
+                        'Error: Your browser doesn\'t support geolocation.');
+  infoWindow.open(map);
+}
 
 
