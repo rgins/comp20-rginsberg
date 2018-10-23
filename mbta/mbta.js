@@ -59,11 +59,11 @@ function initMap() {
         });
     make_polyline();
     make_markers();
-    // user_loc();
+    user_loc();
     display_schedule()
 
 
-    console.log("past geolocation");
+    // console.log("past geolocation");
 
 
 
@@ -93,9 +93,10 @@ function make_polyline() {
       	storkeOpacity: 1.0});
 }
 
+
 function make_markers() {
 	    for (i = 0; i < stations.length; i++ ) {
-          var marker = new google.maps.Marker({
+          	var marker = new google.maps.Marker({
             position: stations[i].position,
             map: map,
             icon: icon
@@ -112,8 +113,10 @@ function display_schedule() {
 	// var infowindow;
 
 	stations.forEach(function(station) {
+		content_string = '<h4>' + station.stop_name + '</h4';
 		var infowindow = new google.maps.InfoWindow({
-    	content: station.stop_name
+
+    	content: content_string
   		});
 
   		station.marker.addListener('click', function() {
@@ -122,19 +125,25 @@ function display_schedule() {
 }
 
 function user_loc() {
-	  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      var pos = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
+	if (navigator.geolocation) {
+    	navigator.geolocation.getCurrentPosition(function(position) {
+      		var pos = {
+        		lat: position.coords.latitude,
+        		lng: position.coords.longitude
+      		};
 
-      infoWindow = new google.maps.InfoWindow;
 
-      infoWindow.setPosition(pos);
-      infoWindow.setContent('Location found.');
-      infoWindow.open(map);
-      map.setCenter(pos);
+      		user_marker = new google.maps.Marker({
+           		position: pos,
+            	map: map
+          	});
+
+      	// infoWindow = new google.maps.InfoWindow;
+
+      	// infoWindow.setPosition(pos);
+      	// infoWindow.setContent('Location found.');
+      	// infoWindow.open(map);
+      	map.setCenter(pos);
     }, function() {
       handleLocationError(true, infoWindow, map.getCenter());
     });
