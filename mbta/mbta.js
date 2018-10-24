@@ -24,13 +24,16 @@ var fields_corner = {lat: 42.300093, lng: -71.061667};
 var central_square = {lat: 42.365486, lng: -71.103802};
 var braintree = {lat: 42.2078543, lng: -71.0011385};
 
+var northbound = "Northbound to Alewife";
+var southbound = "Southbound to Ashmont/Braintree";
+
 var stations = [
 {position: alewife, stop_name: "Alewife", stop_id: "place-alcfcl", marker: null},
 {position: davis, stop_name: "Davis", stop_id: "place-davis", marker: null},
 {position: porter_square, stop_name: "Porter Square", stop_id: "place-pptr", marker: null}, 
 {position: harvard_square, stop_name: "Harvard Square", stop_id: "place-hrsq", marker: null}, 
 {position: central_square, stop_name: "Central Square", stop_id: "place-cntsq", marker: null},
-{position: kendall_mit, stop_name: "Kenall/MIT", stop_id: "place-knncl", marker: null},
+{position: kendall_mit, stop_name: "Kendall/MIT", stop_id: "place-knncl", marker: null},
 {position: charles_mgh, stop_name: "Charles/MGH", stop_id: "place-chnml", marker: null},
 {position: park_street, stop_name: "Park Street", stop_id: "place-pktrm", marker: null},
 {position: downtown_crossing, stop_name: "Downtown Crossing", stop_id: "place-dwnxg", marker: null},
@@ -111,149 +114,61 @@ function make_markers() {
       }
 }
 
-function get_schedule(station) {
-	var request;
-    request = new XMLHttpRequest();
-    request.open("GET", "https://api-v3.mbta.com/predictions?filter[route]=Red&filter[stop]=" 
-    	+ station.stop_id + "&page[limit]=10&page[offset]=0&sort=departure_time&api_key=c5df0bac5455448db1582cc8721e993b", true);
-    var returnHTML;
-    request.onreadystatechange = function() {
-		if (request.readyState == 4 && request.status == 200) {
-			// Step 5: when we get all the JSON data back, parse it and use it
-			theData = request.responseText;
-			stop_info = JSON.parse(theData);
-			console.log("parsed");
-			// console.log(stop_info);
-
-			returnHTML = '<h4>' + station.stop_name + '</h4>';
-			console.log(station.stop_name);
-
-
-			console.log(stop_info["data"]["attributes"]);
-
-			// stop_info.forEach(function(attribute) {
-			// 	console.log(attribute);
-  	// 		});
-
-			// for (i = 0; i < messages.length; i++) {
-			// 	returnHTML += "<li>" + messages[i].content + " by " + messages[i].username + 
-			// 	"</li>";
-			// }
-			// returnHTML += "</p>";
-			// document.getElementById("messages").innerHTML =returnHTML;
-			
-		}
-		else if (request.readyState == 4 && request.status != 200) {
-			// document.getElementById("messages").innerHTML = "Whoops, something went terribly wrong!";
-			// console.log("not 200");
-
-		}
-		else if (request.readyState == 3) {
-			// console.log("3");
-			// document.getElementById("messages").innerHTML = "Come back soon!";
-		}
-
-
-
-
-
-    	// var stop_info = JSON.parse(request.responseText);
-    	// console.log(request.responseText);
-    }
-
-    request.send();
-    return returnHTML;
-}
 
 function display_schedule() {
 	
-	// var infowindow;
-
+	var times = [];
 	stations.forEach(function(station) {
-		
-
-
   		station.marker.addListener('click', function() {
-  			// get_schedule(station);
-  			content_string = '<h4>' + station.stop_name + '</h4>';
-
+  			content_string = '<h2>' + station.stop_name + '</h2>';
+  			// content_string += '<h4>Time        Direction</h4>';
   			var request;
     		request = new XMLHttpRequest();
     		request.open("GET", "https://api-v3.mbta.com/predictions?filter[route]=Red&filter[stop]=" 
     				+ station.stop_id + "&page[limit]=10&page[offset]=0&sort=departure_time&api_key=c5df0bac5455448db1582cc8721e993b", true);
     		var returnHTML;
     		request.onreadystatechange = function() {
-			if (request.readyState == 4 && request.status == 200) {
-				// Step 5: when we get all the JSON data back, parse it and use it
-				theData = request.responseText;
-				stop_info = JSON.parse(theData);
-				// console.log("parsed");
-				// console.log(stop_info);
-				var times = [];
-				// console.log(station.stop_name);
+				if (request.readyState == 4 && request.status == 200) {
+					// Step 5: when we get all the JSON data back, parse it and use it
+					theData = request.responseText;
+					stop_info = JSON.parse(theData);
+	
+					stop_info["data"].forEach(function(prediction) {
+						var loc_time = prediction["attributes"]["arrival_time"];
+						var loc_direction = prediction["attributes"]["direction_id"];
+						times.push({time: loc_time, direction: loc_direction});
 
-				stop_info["data"].forEach(function(prediction) {
-					var loc_time = prediction["attributes"]["arrival_time"];
-					var loc_direction = prediction["attributes"]["direction_id"];
-					times.push({time: loc_time, direction: loc_direction});
-					// console.log(prediction["attributes"]["arrival_time"]);
-				});
+					});
+					for (var i = 0; i < 10; i++) {
+	    				var d = new Date(times[i].time);
+						var loc_string = '<p>' + d.toLocaleTimeString() + ' ';
+						if ((times[i]).direction == 0) {
+							loc_string += southbound;
+						} else {
+							loc_string += northbound;
+						}
+						loc_string += '</p>';
+						content_string += loc_string;
+	    			}
+	    			var infowindow = new google.maps.InfoWindow({
+	    				content: content_string
+	  				});
+	    			infowindow.open(map, station.marker);
+				
+				} else if (request.readyState == 4 && request.status != 200) {
+					content_string = "<h2>Schedule not available right now</h2>";
+					var infowindow = new google.maps.InfoWindow({
+	    				content: content_string
+	  				});
+	    			infowindow.open(map, station.marker);
+				}
 
-				content_string += '<h6>Time\tDirection</h6>';
-				times.forEach(function(time) {
-					loc_string = '<p>' +  + '</p>';
-					// content_string += loc_string;
-				});
+	   		}
+	    	request.send(); 	
+  		
+  	}
+  	)});
 
-				console.log(times);
-
-				// for(i = 0; i < ; i++) {
-				// 	console.log(stop_info["data"][i]);
-				// }
-
-
-				// console.log(stop_info["data"][0]);
-
-				// stop_info.forEach(function(attribute) {
-				// 	console.log(attribute);
-  				// 		});
-
-				// for (i = 0; i < messages.length; i++) {
-				// 	returnHTML += "<li>" + messages[i].content + " by " + messages[i].username + 
-				// 	"</li>";
-				// }
-				// returnHTML += "</p>";
-				// document.getElementById("messages").innerHTML =returnHTML;
-			
-			}
-			else if (request.readyState == 4 && request.status != 200) {
-				// document.getElementById("messages").innerHTML = "Whoops, something went terribly wrong!";
-				// console.log("not 200");
-
-			}
-			else if (request.readyState == 3) {
-				// console.log("3");
-				// document.getElementById("messages").innerHTML = "Come back soon!";
-			}
-
-
-
-
-
-    		// var stop_info = JSON.parse(request.responseText);
-    		// console.log(request.responseText);
-   			 }
-
-    		request.send();
-
-
-
-			var infowindow = new google.maps.InfoWindow({
-    			content: content_string
-  			});
-    		infowindow.open(map, station.marker);
-  		})
-  	});
 }
 
 function user_loc() {
