@@ -64,16 +64,7 @@ function initMap() {
     make_polyline();
     make_markers();
     user_loc();
-    display_schedule()
-
-
-    // console.log("past geolocation");
-
-
-
-
-
-
+    display_schedule();
 }
 
 function make_polyline() {
@@ -107,22 +98,17 @@ function make_markers() {
             position: stations[i].position,
             map: map,
             icon: icon
-            // label: stations[i].stop_name
           });
-          // console.log(marker);
           stations[i].marker = marker;
-
       }
 }
 
 
 function display_schedule() {
-	
 	var times = [];
 	stations.forEach(function(station) {
   		station.marker.addListener('click', function() {
   			content_string = '<h2>' + station.stop_name + '</h2>';
-  			// content_string += '<h4>Time        Direction</h4>';
   			var request;
     		request = new XMLHttpRequest();
     		request.open("GET", "https://api-v3.mbta.com/predictions?filter[route]=Red&filter[stop]=" 
@@ -130,7 +116,6 @@ function display_schedule() {
     		var returnHTML;
     		request.onreadystatechange = function() {
 				if (request.readyState == 4 && request.status == 200) {
-					// Step 5: when we get all the JSON data back, parse it and use it
 					theData = request.responseText;
 					stop_info = JSON.parse(theData);
 	
@@ -179,8 +164,6 @@ function user_loc() {
         		lat: position.coords.latitude,
         		lng: position.coords.longitude
       		};
-
-
       		user_marker = new google.maps.Marker({
            		position: user,
             	map: map
@@ -188,7 +171,6 @@ function user_loc() {
 
           var shortest_dist = Infinity;
           var station_name;
-          // stations.forEach(function(station) { 
           for (var i = 0; i < stations.length; i++) {
             var temp = find_distance(i)
             if (temp < shortest_dist) {
