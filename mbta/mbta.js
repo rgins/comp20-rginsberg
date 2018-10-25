@@ -90,14 +90,14 @@ function make_polyline() {
       	map: map,
         strokeColor: "red",
       	strokeWeight: 6,
-      	storkeOpacity: 1.0});
+      	strokeOpacity: 1.0});
 
      var line2 = new google.maps.Polyline({
       	path: pos_list2, 
       	map: map, 
       	strokeColor: "red",
       	strokeWeight: 6,
-      	storkeOpacity: 1.0});
+      	strokeOpacity: 1.0});
 }
 
 
@@ -193,19 +193,27 @@ function user_loc() {
             var temp = find_distance(i)
             if (temp < shortest_dist) {
               shortest_dist = temp;
-              station_name = stations[i].stop_name;
+              station_name = stations[i];
             }
           };
 
           //divide to convert from kilometers to miles
-           content = "<h2>Closest stop is " + station_name + "</h2><p>"
+           content = "<h2>Closest stop is " + station_name.stop_name + "</h2><p>"
             + (shortest_dist / 1.609) + " miles away</p>";
-
 
           var userwindow = new google.maps.InfoWindow({
               content: content
             });
             userwindow.open(map, user_marker);
+
+            var locs = [user, station_name.position];
+
+        var line1 = new google.maps.Polyline({
+          path: locs, 
+          map: map,
+          strokeColor: "black",
+          strokeWeight: 4,
+          strokeOpacity: 1.0});
 
     }, function() {
       handleLocationError(true, infoWindow, map.getCenter());
