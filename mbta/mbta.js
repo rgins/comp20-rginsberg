@@ -53,6 +53,7 @@ var stations = [
 ];
 var icon = "subway.png";
 var infoWindow;
+var user_marker;
 
 
 function initMap() {
@@ -140,7 +141,7 @@ function display_schedule() {
 
 					});
 					for (var i = 0; i < 10; i++) {
-	    				var d = new Date(times[i].time);
+	    			var d = new Date(times[i].time);
 						var loc_string = '<p>' + d.toLocaleTimeString() + ' ';
 						if ((times[i]).direction == 0) {
 							loc_string += southbound;
@@ -174,23 +175,38 @@ function display_schedule() {
 function user_loc() {
 	if (navigator.geolocation) {
     	navigator.geolocation.getCurrentPosition(function(position) {
-      		var pos = {
+      		user = {
         		lat: position.coords.latitude,
         		lng: position.coords.longitude
       		};
 
 
       		user_marker = new google.maps.Marker({
-           		position: pos,
+           		position: user,
             	map: map
           	});
 
-      	// infoWindow = new google.maps.InfoWindow;
+          var shortest_dist = Infinity;
+          var station_name;
+          // stations.forEach(function(station) { 
+          for (var i = 0; i < stations.length; i++) {
+            var temp = find_distance(i)
+            if (temp < shortest_dist) {
+              shortest_dist = temp;
+              station_name = stations[i].stop_name;
+            }
+          };
 
-      	// infoWindow.setPosition(pos);
-      	// infoWindow.setContent('Location found.');
-      	// infoWindow.open(map);
-      	map.setCenter(pos);
+          //divide to convert from kilometers to miles
+           content = "<h2>Closest stop is " + station_name + "</h2><p>"
+            + (shortest_dist / 1.609) + " miles away</p>";
+
+
+          var userwindow = new google.maps.InfoWindow({
+              content: content
+            });
+            userwindow.open(map, user_marker);
+
     }, function() {
       handleLocationError(true, infoWindow, map.getCenter());
     });
@@ -208,6 +224,30 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.open(map);
 }
 
+
+function find_distance(i) {
+            Number.prototype.toRad = function() {
+            return this * Math.PI / 180;
+          }
+
+          var lat2 = user.lat; 
+          var lon2 = user.lng; 
+          var lat1 = stations[i].position.lat; 
+          var lon1 = stations[i].position.lng; 
+
+          var R = 6371; // km 
+          //has a problem with the .toRad() method below.
+          var x1 = lat2-lat1;
+          var dLat = x1.toRad();  
+          var x2 = lon2-lon1;
+          var dLon = x2.toRad();  
+          var a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
+                          Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
+                          Math.sin(dLon/2) * Math.sin(dLon/2);  
+          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+          var d = R * c;
+          return d;
+}
 
 
 

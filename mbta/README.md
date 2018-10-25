@@ -1,0 +1,2 @@
+I used the example at https://stackoverflow.com/questions/14560999/using-the-haversine-formula-in-javascript to implement the Haversine forumla to find the distance between the user and the closest T stop that was linked in the assignment.
+I additionally referenced and modified a lot of examples from the google maps api.
