@@ -8,7 +8,21 @@
     <link rel="stylesheet" href="style.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
-        // Your work will be done here...
+        $(document).ready(function() {
+            $('#msg').keypress(function (e){
+                if(e.keyCode == 13){
+                    var message = $('#msg').val();
+                    updatedCookie = "msg=" + message;
+                    // console.log(updatedCookie);
+                    document.cookie = updatedCookie;
+                    allCookies = document.cookie;
+                    $("#log").html(allCookies);
+                }
+            });
+            
+            
+        });
+
     </script>
 </head>
 
