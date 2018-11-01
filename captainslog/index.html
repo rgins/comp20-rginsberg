@@ -11,17 +11,26 @@
         $(document).ready(function() {
             $('#msg').keypress(function (e){
                 if(e.keyCode == 13){
-                    var message = $('#msg').val();
-                    updatedCookie = "msg=" + message;
-                    // console.log(updatedCookie);
-                    document.cookie = updatedCookie;
-                    allCookies = document.cookie;
-                    $("#log").html(allCookies);
+                    txt = $('#msg').val(); 
+                    console.log(txt);
+                    localStorage[new Date().getTime()] = txt;
+                    reload();
+        
+                 
                 }
             });
-            
-            
+              
         });
+
+        function reload() {
+            output = "";
+            for (var i = localStorage.length - 1; i >= 0; i--) {
+                output = output + "<p>" + localStorage.getItem(localStorage.key(i)) +  localStorage.getItem(localStorage.key(i))+"</p>\n";
+                // console.log(localStorage.getItem(localStorage.key(i)));
+            }
+            $("#log").html(output);
+        }
+
 
     </script>
 </head>
