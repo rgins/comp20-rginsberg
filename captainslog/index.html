@@ -12,12 +12,9 @@
             $('#msg').keypress(function (e){
                 if(e.keyCode == 13){
                     txt = $('#msg').val(); 
-                    // console.log(txt);
                     var date = new Date();
                     localStorage.setItem(date, txt);
                     reload();
-        
-                 
                 }
             });
               
