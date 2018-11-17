@@ -143,7 +143,6 @@ GameManager.prototype.move = function (direction) {
     if (person != null && this.score != null & this.grid != null & username != '') {
       qstring = "username=" + person + "&score=" + this.score + "&grid=" + JSON.stringify(this.grid);
       $.post("https://blooming-mesa-33383.herokuapp.com/submit", qstring);
-      $.post("https://localhost:5000/submit", qstring);
     }
     return; 
   }
