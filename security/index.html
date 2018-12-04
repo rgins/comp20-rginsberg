@@ -8,13 +8,51 @@
 <body>
 	<h1>Security Report</h1>
 	<h2>Introduction</h2>
-	<p>The product is a server to store high scores for the game 2048.
-	I was assigned to find vulnerabilities in the server.</p>
+		<p>The product is a server to store high scores for the game 2048.
+		I was assigned to find vulnerabilities in the server.</p>
 	<h2>Methodology</h2>
-	<p>I used curl to send post requests to the server. I also used chrome to access the server using the url.</p>
+		<p>I used curl to send post requests to the server. I also used chrome to access the server using the url. I initially tried to use cross site scripting (XSS) by submitting post request to the server with JS, which was successful on Chrome; however, if the GET / route is used in Safari all the html tags are displayed as plain text on the site, so the XSS does not reroute the site.</p>
 	<h2>Abstraction of Findings</h2>
 	<h2>Issues Found</h2>
+		<ul>
+			<li>XSS: 
+				<ul>
+					<li>Issue found on GET / route, but originates in POST /submit</li>
+					<li>High Severity</li>
+					<li>I found the issue by submitting JavaScript in a query string with curl and then opening the site in Chrome. Interestingly, XSS does not impact the site when viewed with Safari because all the html tags are rendered in plain text including the script tags. The lack of rendering of the html tags makes the site difficult to view; however, the site is not vulnerable to XSS in this instance.</li>
+					<li> <p>Proof of vulnerability:</p><img src="XSS.png" alt = "chrome autosuggesting youtube for heroku site" width = "800">
+					 <img src="never_gon_give_u_up.png" alt = "never gonna give you up on youtube" width = "800"></li>
+					 <li>One solution is to remove all special characters from usernames before them in the database.</li>
+				</ul>
+			</li>
+			<li>Injection Attack: 
+				<ul>
+					<li>Issue found on GET /scores.json route</li>
+					<li>Medium Severity</li>
+					<li>I found the issue by entering the URL with query string "https://pure-citadel-21165.herokuapp.com/scores.json?username[$ne]=a". This provided me with the entire contents of the database.</li>
+					<li> <p>Proof of vulnerability:</p><img src="injection.png" alt = "database information" width = "800">
+					</li>
+					 <li>A solution would be to not allow query strings with special operatores.</li>
+				</ul>
+			</li>
+			<li>Cross Origin Resource Sharing: 
+				<ul>
+					<li>Issue in index.js.</li>
+					<li>High Severity</li>
+					<li>I found the issue by reading my partner's code in index.js (where it can be found on lines 20 and 21) and confirmed using developer tools in chrome. As can be seen in the image below, the wildcard '*' is the value of 'Access-Control-Allow-Origin', which is a major vulnerability if there are any files that contain private information accessible from the server.</li>
+					<li> <p>Proof of vulnerability:</p><img src="request_response.png" alt = "HTTP request/response information" width = "800">
+					</li>
+					 <li>A solution would be to only allow cross origin resource sharing for specific files that are necessary for the server.</li>
+				</ul>
+			</li>
+		
+		</ul>
 	<h2>Conclusion</h2>
+		<p>I strongly recommend implementing the listed solutions to all secruity vulnerabilities listed previously. All of these solutions would be relatively simple and fast to implement by anyone with a knowledge of JavaScript and node.js.</p>
 	<h2>References</h2>
+		<ul>
+			<li>class notes</li>
+			<li><a href="https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)">https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)</a></li>
+		</ul>
 </body>
 </html>
