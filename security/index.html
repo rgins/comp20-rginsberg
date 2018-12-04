@@ -13,6 +13,12 @@
 	<h2>Methodology</h2>
 		<p>I used curl to send post requests to the server. I also used chrome to access the server using the url. I initially tried to use cross site scripting (XSS) by submitting post request to the server with JS, which was successful on Chrome; however, if the GET / route is used in Safari all the html tags are displayed as plain text on the site, so the XSS does not reroute the site.</p>
 	<h2>Abstraction of Findings</h2>
+		<ul>
+			<li>The first issue I found was caused by the server trusting user input. 
+			I was able to submit a snippet of code instead of a username to the server that would redirect the website to Rick Astley's "Never Gonna Give You Up" when a user views the high scores page.</li>
+			<li>The second issue I found allowed me to view the entire contents of the database including usernames, scores, grids, and timestamps for every entry stored in the database. This is not a major issue right now, but if the server were expanded to store any personal information (e.g., real names, birth dates, passwords) this information would be accessible by the public.</li>
+			<li>The third issue I identified would allow a malicious user to access any file that is stored by the server–potentially exposing private information.</li>
+		</ul>
 	<h2>Issues Found</h2>
 		<ul>
 			<li>XSS: 
