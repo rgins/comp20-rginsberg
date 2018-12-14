@@ -1,4 +1,5 @@
 ##COMP 20 Web Programming Labs and Assignments 
+
 *My favorite assignment was mbta because I created a working and useful application. The google maps api is well documented, which made it easier to work with than other apis used in this class.
 *Compared to day 1 of this course, I actually understand how the web works. I also have much more experience reading online documentation and figuring out how to connect different pieces to creating a web app with a server side and client side. 
 *What was the most important thing that you learned in this course? Cite two examples as evidence.
